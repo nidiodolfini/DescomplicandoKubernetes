@@ -9,7 +9,7 @@ spec: # são as especificações do recurso mencionado no kind, nesse caso, Depl
       app: cliente-curl-demo # nessa parte podemos definir qualquer label e sempre seguindo o padrão de chave:valor, como no exemplo da aula de ontem, poderia ser algo como etiqueta:cliente-curl-demo-errado. porém, se seguirmos dessa forma, o template também deve ter essa label, senão o ReplicaSet não conseguirá criar/encontrar os pods.
   template: # é o template do ReplicaSet, ele é usado para criar os pods.
     metadata: # são os metadados do template do ReplicaSet, por exemplo: nome, namespace, labels.
-      labels: 
+      labels:
         app: cliente-curl-demo # deve seguir o mesmo padrão de chave:valor do matchLabels do selector.
     spec: # são as especificações do template do ReplicaSet, nesse caso, os containers que serão criados.
       containers: # são os containers que serão criados.
@@ -18,8 +18,18 @@ spec: # são as especificações do recurso mencionado no kind, nesse caso, Depl
           command: ["sh", "-c", "sleep infinity"] # comando que será executado no entrypoint do container.
           resources: # são os recursos que serão alocados para o container.
             requests: # são os recursos que serão alocados no momento da criação do container para o container, ele garante que o nó tenha pelo menos isso disponível para o container e em prioridade de escala, esse container será o primeiro a ser escalado se o nó tiver recursos disponíveis.
-              memory: "64Mi" 
-              cpu: "100m" 
+              memory: "64Mi"
+              cpu: "100m"
             limits: # é o limite máximo de recursos que o container pode usar, se atingir o limite, o container não será capaz de usar mais recursos.
-              memory: "128Mi" 
-              cpu: "200m" 
+              memory: "128Mi"
+              cpu: "200m"
+      nodeSelector:
+        kubernetes.io/os: linux
+        workload-type: core-kubernetes
+      tolerations:
+        - key: workload-type
+          operator: Equal
+          value: core-kubernetes
+          effect: NoSchedule
+        - key: CriticalAddonsOnly
+          operator: Exists
