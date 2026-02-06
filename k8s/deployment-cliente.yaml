@@ -1,35 +1,25 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cliente-curl-demo
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: cliente-curl-demo
-  template:
-    metadata:
-      labels:
-        app: cliente-curl-demo
-    spec:
-      containers:
-        - name: curl
-          image: curlimages/curl:8.11.1
-          command: ["sh", "-c", "sleep infinity"]
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "100m"
-            limits:
-              memory: "128Mi"
-              cpu: "200m"
-      nodeSelector:
-        kubernetes.io/os: linux
-        workload-type: core-kubernetes
-      tolerations:
-        - key: workload-type
-          operator: Equal
-          value: core-kubernetes
-          effect: NoSchedule
-        - key: CriticalAddonsOnly
-          operator: Exists
+apiVersion: apps/v1 # versão da API do Kubernetes
+kind: Deployment # tipo de recurso que vamos usar, por exemplo: Deployment, Pod, Service.
+metadata: # metadados do recurso mencionado acima, por exemplo: nome, namespace, labels.
+  name: cliente-curl-demo # nome do recurso mencionado no kind
+spec: # são as especificações do recurso mencionado no kind, nesse caso, Deployment. Um ponto importante é no selector.matchLabels, nós definimos uma label que será usada para o ReplicaSet criar os pods.
+  replicas: 1 # número de pods que serão criados pelo ReplicaSet.
+  selector: # é o selector do ReplicaSet, ele é usado para selecionar os pods que serão criados pelo ReplicaSet.
+    matchLabels: # o matchLabels nada mais é do que a definição da label que será usada para o ReplicaSet criar os pods.
+      app: cliente-curl-demo # nessa parte podemos definir qualquer label e sempre seguindo o padrão de chave:valor, como no exemplo da aula de ontem, poderia ser algo como etiqueta:cliente-curl-demo-errado. porém, se seguirmos dessa forma, o template também deve ter essa label, senão o ReplicaSet não conseguirá criar/encontrar os pods.
+  template: # é o template do ReplicaSet, ele é usado para criar os pods.
+    metadata: # são os metadados do template do ReplicaSet, por exemplo: nome, namespace, labels.
+      labels: 
+        app: cliente-curl-demo # deve seguir o mesmo padrão de chave:valor do matchLabels do selector.
+    spec: # são as especificações do template do ReplicaSet, nesse caso, os containers que serão criados.
+      containers: # são os containers que serão criados.
+        - name: curl # nome do container.
+          image: curlimages/curl:8.11.1 # imagem do container.
+          command: ["sh", "-c", "sleep infinity"] # comando que será executado no entrypoint do container.
+          resources: # são os recursos que serão alocados para o container.
+            requests: # são os recursos que serão alocados no momento da criação do container para o container, ele garante que o nó tenha pelo menos isso disponível para o container e em prioridade de escala, esse container será o primeiro a ser escalado se o nó tiver recursos disponíveis.
+              memory: "64Mi" 
+              cpu: "100m" 
+            limits: # é o limite máximo de recursos que o container pode usar, se atingir o limite, o container não será capaz de usar mais recursos.
+              memory: "128Mi" 
+              cpu: "200m" 
