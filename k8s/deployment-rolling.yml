@@ -1,0 +1,48 @@
+##########################################################################################
+
+# IMPORTANTE
+# A PARTE DESCOMENTADA É A PARTE QUE DEVE SER USADA
+# A PARTE CUJA ESTÁ COMENTADA, É REFERENTE AO RESTANTE DO DEPLOYMENT.
+
+##########################################################################################
+
+# apiVersion: apps/v1
+# kind: Deployment 
+# metadata: 
+#   name: cliente-curl-demo 
+# spec: 
+#   replicas: 1 
+#   selector: 
+#     matchLabels: 
+#       app: cliente-curl-demo 
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+  # template: 
+  #   metadata: 
+  #     labels:
+  #       app: cliente-curl-demo 
+  #   spec: 
+  #     containers: 
+  #       - name: curl 
+  #         image: curlimages/curl:8.11.1 
+  #         command: ["sh", "-c", "sleep infinity"] 
+  #         resources: 
+  #           requests: 
+  #             memory: "64Mi"
+  #             cpu: "100m"
+  #           limits: 
+  #             memory: "128Mi"
+  #             cpu: "200m"
+  #     nodeSelector:
+  #       kubernetes.io/os: linux
+  #       workload-type: core-kubernetes
+  #     tolerations:
+  #       - key: workload-type
+  #         operator: Equal
+  #         value: core-kubernetes
+  #         effect: NoSchedule
+  #       - key: CriticalAddonsOnly
+  #         operator: Exists
