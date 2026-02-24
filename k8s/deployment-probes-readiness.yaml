@@ -1,0 +1,40 @@
+# As probes são uma forma de você monitorar o seu Pod e saber se ele está em um estado saudável ou não. Com elas é possível assegurar que seus Pods estão rodando e respondendo de maneira correta, e mais do que isso, que o Kubernetes está testando o que está sendo executado dentro do seu Pod.
+
+#Hoje nós temos disponíveis três tipos de probes, a livenessProbe, a readinessProbe e a startupProbe. Vamos ver no detalhe cada uma delas.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-deployment
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx-deployment
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: nginx-deployment
+    spec:
+      containers:
+      - image: nginx:1.19.2
+        name: nginx
+        resources:
+          limits:
+            cpu: "500m"
+            memory: 256Mi
+          requests:
+            cpu: "250m"
+            memory: 128Mi
+        readinessProbe: # Onde definimos a nossa probe de leitura
+          httpGet: # O tipo de teste que iremos executar, neste caso, iremos executar um teste HTTP
+            path: / # O caminho que iremos testar
+            port: 80 # A porta que iremos testar
+          initialDelaySeconds: 10 # O tempo que iremos esperar para executar a primeira vez a probe
+          periodSeconds: 10 # De quanto em quanto tempo iremos executar a probe
+          timeoutSeconds: 5 # O tempo que iremos esperar para considerar que a probe falhou
+          successThreshold: 2 # O número de vezes que a probe precisa passar para considerar que o container está pronto
+          failureThreshold: 3 # O número de vezes que a probe precisa falhar para considerar que o container não está pronto

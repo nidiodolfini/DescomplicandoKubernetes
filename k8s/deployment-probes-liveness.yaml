@@ -1,0 +1,38 @@
+# As probes são uma forma de você monitorar o seu Pod e saber se ele está em um estado saudável ou não. Com elas é possível assegurar que seus Pods estão rodando e respondendo de maneira correta, e mais do que isso, que o Kubernetes está testando o que está sendo executado dentro do seu Pod.
+
+#Hoje nós temos disponíveis três tipos de probes, a livenessProbe, a readinessProbe e a startupProbe. Vamos ver no detalhe cada uma delas.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-deployment
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx-deployment
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: nginx-deployment
+    spec:
+      containers:
+      - image: nginx:1.19.2
+        name: nginx
+        resources:
+          limits:
+            cpu: "500m"
+            memory: 256Mi
+          requests:
+            cpu: "250m"
+            memory: 128Mi
+        livenessProbe: # Aqui é onde vamos adicionar a nossa livenessProbe
+          tcpSocket: # Aqui vamos utilizar o tcpSocket, onde vamos se conectar ao container através do protocolo TCP
+            port: 80 # Qual porta TCP vamos utilizar para se conectar ao container
+          initialDelaySeconds: 10 # Quantos segundos vamos esperar para executar a primeira verificação
+          periodSeconds: 10 # A cada quantos segundos vamos executar a verificação
+          timeoutSeconds: 5 # Quantos segundos vamos esperar para considerar que a verificação falhou
+          failureThreshold: 3 # Quantos falhas consecutivas vamos aceitar antes de reiniciar o container
